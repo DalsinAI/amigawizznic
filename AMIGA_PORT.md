@@ -8,7 +8,9 @@ GPL 3 too) for AmigaOS 3.2 on a 68040 or 68060 with an FPU and an RTG
 screen, on OpenGPU's SDL 1.2 (sdl12-compat on SDL 2). The port is on
 branch team2/wizznic-amiga.
 
-Status: builds; not yet run in the lab.
+Status: first lab run (Instance-45, a window): it showed "Loading..."
+and hung in SDL 2's blit-map list (see src/menu.c, src/credits.c below).
+That is fixed in the second build, not yet run again.
 
 
 What you need
@@ -104,6 +106,16 @@ Changes to upstream's files:
   the colour in its low half, which is the second pixel on a big-endian
   machine (and wrote past the line); it now writes both. The scaled
   surface asked for an alpha mask outside its 16 bits, which SDL 2 refuses.
+- src/menu.c, src/credits.c: three 16-bit surfaces asked for the alpha
+  mask 0xff000000, outside their 16 bits. SDL 1.2 ignored it; SDL 2 (under
+  sdl12-compat) refuses the format and returns NULL, and the game draws
+  into the NULL surface anyway. On the Amiga address 0 can be read, so
+  SDL 2 got a garbage surface and looped forever in SDL_InvalidateMap's
+  list (the first lab run stopped at "Loading..."). They ask for no alpha
+  now.
+- src/main.c prints each loading step in the Shell ("Loading: packs"
+  ...); with SetEnv WIZZNIC_TRACE 1, src/sprite.c and src/sound.c also
+  print each picture and sound as it loads.
 - amiga/amiga_paths.c (from the Commander Genius and OpenLieroX ports):
   the program is linked with --wrap for fopen, open, stat, opendir,
   mkdir, unlink and the rest, so that upstream's joins
