@@ -54,8 +54,8 @@ msg_t* initMsg(const char* strTitle, const char* strName,SDL_Surface* screen)
   msg_t* t = malloc(sizeof(msg_t));
 
   //Create surface
-  t->surfTitle = SDL_CreateRGBSurface(SDL_SWSURFACE, (getCharSize(FONTSMALL)[0]*strlen(strTitle)),(getCharSize(FONTSMALL)[1]), (setting()->bpp*8), screen->format->Rmask,screen->format->Gmask,screen->format->Bmask,0xff000000);
-  t->nameWaving.img = SDL_CreateRGBSurface(SDL_SWSURFACE, (getCharSize(FONTMEDIUM)[0]*strlen(strName)),(getCharSize(FONTMEDIUM)[1]),(setting()->bpp*8), screen->format->Rmask,screen->format->Gmask,screen->format->Bmask,0xff000000);
+  t->surfTitle = SDL_CreateRGBSurface(SDL_SWSURFACE, (getCharSize(FONTSMALL)[0]*strlen(strTitle)),(getCharSize(FONTSMALL)[1]), (setting()->bpp*8), screen->format->Rmask,screen->format->Gmask,screen->format->Bmask,0);
+  t->nameWaving.img = SDL_CreateRGBSurface(SDL_SWSURFACE, (getCharSize(FONTMEDIUM)[0]*strlen(strName)),(getCharSize(FONTMEDIUM)[1]),(setting()->bpp*8), screen->format->Rmask,screen->format->Gmask,screen->format->Bmask,0);
   t->nameWaving.screen=screen;
   SDL_FillRect(t->surfTitle, 0, SDL_MapRGB(t->surfTitle->format, 0,255,255));
   SDL_FillRect(t->nameWaving.img, 0, SDL_MapRGB(t->nameWaving.img->format, 0,255,255));

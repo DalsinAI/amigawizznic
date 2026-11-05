@@ -76,8 +76,11 @@ int initSound()
 int loadSample(const char* fileName, int index)
 {
   lastPlayed[index]=0;
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("loadSample(); Open: %s\n", fileName);
+#elif defined(__amigaos__)
+  //SetEnv WIZZNIC_TRACE 1: every sound's name in the Shell as it loads.
+  if( getenv("WIZZNIC_TRACE") ) { printf("loadSample: %s\n", fileName); fflush(stdout); }
 #endif
   //Check if we should load it
   if(!loadedSamples[index] || strcmp(loadedSamples[index], fileName)!=0)

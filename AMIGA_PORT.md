@@ -144,7 +144,7 @@ fans, no licence of their own) are left out.
 Known limits
 ------------
 
-- Not yet run on an Amiga.
+- Not yet run on an Amiga past the loading screen.
 - Your own music (Options) must be WAV, PCM or mono IMA ADPCM; Ogg and
   MP3 are not played.
 - No online highscores, DLC or level upload; the menus' "Allow Online"

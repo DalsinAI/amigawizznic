@@ -27,8 +27,11 @@ SDL_Surface* loadImg( const char* fileName )
 
   if( isFile(fileName) )
   {
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("loadImg(); Open: %s\n",fileName);
+#elif defined(__amigaos__)
+    //SetEnv WIZZNIC_TRACE 1: every picture's name in the Shell as it loads.
+    if( getenv("WIZZNIC_TRACE") ) { printf("loadImg: %s\n",fileName); fflush(stdout); }
 #endif
     unoptimized = IMG_Load( fileName );
 
