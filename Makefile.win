@@ -1,0 +1,56 @@
+# Makefile to compile Wizznic.exe from windows.
+# Required libs that are not included in a standard Debian mingw32:
+#   SDL-devel-1.2.15-mingw32
+#   SDL_image-1.2.12
+#   SDL_mixer-1.2.12
+#   glew-1.7.0-win32
+
+CC = i686-w64-mingw32-gcc
+LD = $(CC)
+STRIP = i686-w64-mingw32-strip
+WINDRES = i686-w64-mingw32-windres
+
+NAME=wizznic.exe
+TARGET= $(NAME)
+
+DEFS = -DDATADIR="\"./\"" -DWIN32 -DWIN32_CROSS -D_DEFAULT_SOURCE -D__USE_BSD
+
+ifneq ($(BUILD_NUMBER),)
+  DEFS +=-DBUILD_NUMBER="\"$(BUILD_NUMBER)\""
+endif
+
+INCS =  -I.
+CFLAGS=-O3 -std=c99
+LDFLAGS=$(CFLAGS)
+LIBS = -lmingw32 -lSDLmain -lSDL -lSDL_image -lSDL_mixer -lm
+
+#Are we compiling with gl?
+ifneq ($(WITH_OPENGL),false)
+	LIBS += -lopengl32
+	DEFS += -DWITH_OPENGL
+endif
+
+SOURCES = $(wildcard src/*.c) src/platform/pc.c\
+src/platform/dumplevelimages.c src/platform/libDLC.c\
+src/list/list.c
+
+OBJS = $(SOURCES:.c=.o)
+
+MYCC = $(CC) $(CFLAGS) $(INCS) $(DEFS)
+
+########################################################################
+
+sdl: $(TARGET)
+
+all: $(TARGET) 
+
+$(TARGET): $(OBJS)
+	$(WINDRES) src/platform/windows.rc -O coff -o windows.res
+	$(LD) $(LDFLAGS) $(OBJS) -o $@ windows.res $(LIBS)
+	$(STRIP) $@
+
+.c.o:
+	$(MYCC) -c $< -o $@
+
+clean:
+	rm -f $(NAME) src/*.o src/platform/*.o windows.res src/list/*.o

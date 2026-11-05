@@ -1,0 +1,49 @@
+# Can someone with a PSP environment update this Makefile to actually work?
+# I don't know what to do about it.
+
+ifeq ($(DATADIR),)
+  DATADIR="./"
+endif 
+
+DEFS = -DDATADIR="\"$(DATADIR)\"" -D_DEFAULT_SOURCE
+
+ifneq ($(BUILD_NUMBER),)
+  DEFS +=-DBUILD_NUMBER="\"$(BUILD_NUMBER)\""
+endif
+
+ifneq ($(RELEASE_VERSION),)
+  DEFS +=-DRELEASE_VERSION="\"$(RELEASE_VERSION)\""
+endif
+
+TARGET	= wizznic
+
+
+list:
+	$(MAKE) -C src/list/ lib
+
+SOURCES = $(wildcard src/*.c) src/platform/pspspec.c
+OBJS = $(SOURCES:.c=.o)
+
+CFLAGS = -g -G4 -Wall -O3 -funroll-loops -ffast-math -std=c99
+CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
+ASFLAGS = $(CFLAGS)
+
+#BUILD_PRX = 1
+
+PSPBIN = $(PSPSDK)/../bin
+LIBDIR =
+LDFLAGS =
+STDLIBS= -lSDL_gfx -lSDL_mixer -lSDL_ttf -lfreetype -lSDL_image -lSDL -lvorbisfile -lvorbis -logg -lsmpeg -lpng -ljpeg -lm -lz -lc \
+-lpspsdk -lpspctrl -lpsprtc -lpsppower -lpspgu -lpsphprm -lpspgum_vfpu -lstdc++ -lpspvfpu -lpspge -lpspaudio
+LIBS = $(STDLIBS)$(YOURLIBS)
+LIB =
+
+EXTRA_TARGETS = EBOOT.PBP
+PSP_EBOOT_TITLE = Wizznic 0.9.1
+
+PSP_EBOOT_ICON = icon.png
+PSP_EBOOT_PIC1 = NULL
+
+PSPSDK=$(shell psp-config --pspsdk-path)
+DEFAULT_CFLAGS = $(shell $(SDL_CONFIG) --cflags)
+include $(PSPSDK)/lib/build.mak

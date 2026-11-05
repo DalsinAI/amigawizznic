@@ -1,0 +1,13 @@
+*.o
+wizznic
+highscores/
+settings.ini
+wizznic.depend
+wizznic.layout
+wizznic.layout
+wizznic-wiz
+wizznic.layout.cbTemp
+wizznic.exe
+Debug/
+bundler/
+dlc/

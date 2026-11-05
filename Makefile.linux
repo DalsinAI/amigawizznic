@@ -1,0 +1,89 @@
+#Makefile for wizznic.
+#To make a system-wide install add DATADIR=/dir/to/data/ and BINDIR=/dir/to/bin/ to the make command
+#To compile without OpenGL scaling support, add WITH_OPENGL=false to the make command.
+
+CC = gcc
+LD = $(CC)
+STRIP = strip
+MAKE = make
+
+NAME=wizznic
+TARGET= $(NAME)
+
+ifeq ($(DATADIR),)
+  DATADIR="./"
+endif 
+
+DEFS = -DDATADIR="\"$(DATADIR)\"" -D_DEFAULT_SOURCE -D__USE_BSD
+
+#default to /usr/share/man for man page
+#note: some systems use /usr/local/share/man, others use /usr/local/man
+#packagers should set the variable accordingly
+MANDIR = /usr/share/man/
+
+#Add the PER_USER_FILES define if the DATADIR is set
+ifneq ($(DATADIR),)
+  ifneq ($(DATADIR),"./")
+        DEFS +=-DPER_USER_FILES
+  endif
+endif
+
+ifneq ($(BUILD_NUMBER),)
+  DEFS +=-DBUILD_NUMBER="\"$(BUILD_NUMBER)\""
+endif
+
+INCS =  -I. -I/usr/include -I/usr/include/SDL
+CFLAGS= -Wall -Wextra -Werror -std=c99
+ifeq ($(DEBUG),)
+  CFLAGS += -O3
+else
+  CFLAGS += -g
+  DEFS +=-DDEBUG
+endif
+
+LDFLAGS=$(CFLAGS)
+LIBS = -lSDL -lSDL_image -lSDL_mixer -lm -lpthread
+
+#Are we compiling with gl?
+ifneq ($(WITH_OPENGL),false)
+	LIBS += -lGL
+	DEFS += -DWITH_OPENGL
+endif
+
+SOURCES = $(wildcard src/*.c) src/platform/pc.c\
+src/platform/dumplevelimages.c src/platform/libDLC.c\
+src/list/list.c
+
+OBJS = $(SOURCES:.c=.o)
+MYCC = $(CC) $(CFLAGS) $(INCS) $(DEFS)
+
+########################################################################
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(LD) $(LDFLAGS) $(OBJS) -o $@ $(LIBS)
+ifeq ($(DEBUG),)
+	$(STRIP) $@
+endif
+
+tools: mkbundle
+
+mkbundle: tools/mkBundle.c src/list/list.c src/bundle.c
+	$(CC) tools/mkBundle.c src/list/list.c src/bundle.c -o mkbundle.bin
+
+.c.o:
+	$(MYCC) -c $< -o $@
+
+install:
+	install -d -D -m 755 "$(DESTDIR)$(BINDIR)"
+	install -D -m 755 "$(TARGET)" "$(DESTDIR)$(BINDIR)"
+	install -d -D -m 755 "$(DESTDIR)$(DATADIR)"
+	cp -R data "$(DESTDIR)$(DATADIR)"
+	cp -R packs "$(DESTDIR)$(DATADIR)"
+	find "$(DESTDIR)$(DATADIR)" -type d -exec chmod 755 {} \;
+	find "$(DESTDIR)$(DATADIR)" -type f \! -executable -exec chmod 644 {} \;
+	install -d "$(DESTDIR)$(MANDIR)man6/"
+	install -m 644 doc/wizznic.6 "$(DESTDIR)$(MANDIR)man6/"
+
+clean:
+	rm -f $(NAME) src/*.o src/platform/*.o src/list/*.o mkbundle.bin
