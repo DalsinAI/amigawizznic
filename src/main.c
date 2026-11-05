@@ -46,6 +46,18 @@
 #include "transition.h"
 #include "platform/libDLC.h"
 
+#if defined(__amigaos__)
+//Loading progress in the Shell, so that a hang shows where it is.
+#define AMIGA_STEP(name) do { printf("Loading: %s\n", name); fflush(stdout); } while(0)
+//amiga/amiga_screens.c: closes the empty screens SDL2.module 0.6 leaves after a full-screen quit.
+void amiga_screens_snapshot(void);
+void amiga_screens_close_leftovers(void);
+#endif
+
+#ifndef AMIGA_STEP
+#define AMIGA_STEP(name) do { } while(0)
+#endif
+
 #if defined(PC)
 #include <sys/stat.h>
 #include <unistd.h>
@@ -144,6 +156,11 @@ int main(int argc, char *argv[])
 
   //Set scaling
   setting()->scaleFactor=1.0;
+
+  #if defined(__amigaos__)
+  amiga_screens_snapshot();
+  atexit(amiga_screens_close_leftovers); //Runs after SDL_Quit (registered later).
+  #endif
 
   atexit(SDL_Quit);
 
@@ -354,6 +371,17 @@ int main(int argc, char *argv[])
   //Load fonts
   txtInit();
 
+  #if defined(__amigaos__)
+  //Loading the packs, sounds and music takes a while on a 68k: say so.
+  SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0,0,0));
+  txtWriteCenter(screen, FONTSMALL, "Loading...", HSCREENW, HSCREENH);
+  if( doScale > 1 )
+    swScale(screen,doScale);
+  else
+    SDL_Flip(screen);
+  #endif
+
+  AMIGA_STEP("menu graphics");
   //Menu Graphics
   if(!initMenu(screen))
   {
@@ -361,15 +389,19 @@ int main(int argc, char *argv[])
     return(-1);
   }
 
+  AMIGA_STEP("controls");
   //Init controls
   initControls();
 
+  AMIGA_STEP("stats");
   //Init stats
   statsInit();
 
+  AMIGA_STEP("packs");
   //Init packs
   packInit();
 
+  AMIGA_STEP("sounds");
   //Load sounds
   if(!initSound())
   {
@@ -377,9 +409,11 @@ int main(int argc, char *argv[])
     return(-1);
   }
 
+  AMIGA_STEP("user levels");
   //Scan userlevels dir
   makeUserLevelList(screen);
 
+  AMIGA_STEP("particles");
   //Init particles
   initParticles(screen);
 
@@ -400,9 +434,11 @@ int main(int argc, char *argv[])
   }
   #endif
 
+  AMIGA_STEP("stars");
   //init starfield
   initStars(screen);
 
+  AMIGA_STEP("pointer");
   //Init pointer
   initPointer(screen);
 
@@ -427,9 +463,11 @@ int main(int argc, char *argv[])
   //Start playing music (has to be done after readong settings)
   soundSetMusic();
 
+  AMIGA_STEP("credits");
   //Initialize credits
   initCredits(screen);
 
+  AMIGA_STEP("transition");
   initTransition();
 
 
@@ -513,6 +551,8 @@ int main(int argc, char *argv[])
 
   screenShotSetCaptureScreen(screen);
 #endif
+
+  AMIGA_STEP("done, running");
 
   int lastTick;
   while(state!=STATEQUIT)

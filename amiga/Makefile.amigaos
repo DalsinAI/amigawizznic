@@ -1,0 +1,116 @@
+# Wizznic 1.1 for AmigaOS 3.x, 68040/68060 + FPU, RTG,
+# on OpenGPU's SDL 1.2 (sdl12-compat on SDL2.module).
+#
+#   make -f amiga/Makefile.amigaos -j2 \
+#        STOVE=/path/to/openamigagcc-16.2.0-open4 \
+#        NDK=/path/to/OpenNDK/Include_H SDLKIT=/path/to/opengpu-sdk \
+#        DEPS=/path/to/m68k-amigaos
+#
+# STOVE is GFOpenAmigaGCC 16.2.0-open4 or later. SDLKIT is the OpenGPU
+# developer kit: libSDL.a is SDL 1.2 (sdl12-compat) with SDL 2's link
+# library inside. DEPS holds the Team's static zlib and libpng
+# (amiga/deps/build-m68k-libs.sh builds them).
+#
+# SDL_image and SDL_mixer 1.2 are small shims (amiga/, headers in
+# amiga/include/SDL). Cut: OpenGL scaling, the online stats and DLC
+# downloads (curl), -record (ffmpeg) and -d (level picture dumps).
+# The drawer goes to dist/Wizznic; its sounds and music are converted from
+# Ogg Vorbis to WAV on the host by amiga/tools/ogg2wav.py (GStreamer).
+
+STOVE   ?= $(HOME)/CradleLab/toolchain/openamigagcc-16.2.0-open4-x86_64-linux
+NDK     ?= $(HOME)/CradleLab/gfopensdk/OpenNDK/Include_H
+SDLKIT  ?= /mnt/amigachrome/team2/deps/opengpu-sdk
+DEPS    ?= /mnt/amigachrome/team2/deps/m68k-amigaos
+CC      = $(STOVE)/bin/m68k-amigaos-gcc
+STRIP   = $(STOVE)/bin/m68k-amigaos-strip
+CPU     ?= -m68040 -m68881
+# -fno-tree-loop-distribute-patterns: GCC 16's loop miscompile (the kit's
+# sdl-config gives it for GCC 16 too).
+OPT     ?= -O2 -fomit-frame-pointer -fno-tree-loop-distribute-patterns
+
+DEFS    = -D__amigaos__ '-DDATADIR="PROGDIR:"' -D_DEFAULT_SOURCE -DNO_SDL_GLU
+INC     = -Iamiga/include -Iamiga/include/SDL -I$(SDLKIT)/include -I$(SDLKIT)/include/SDL \
+          -I$(DEPS)/include
+CFLAGS  = -noixemul $(OPT) $(CPU) $(DEFS) $(INC) -std=gnu99 -MMD -MP
+AMIGAWARN = -Wall -Wextra
+
+# Every path upstream builds goes through amiga_path() (amiga/amiga_paths.c).
+WRAPS   = fopen freopen fclose fdopen open close closedir stat lstat opendir mkdir rmdir remove unlink \
+          rename chdir access SDL_RWFromFile
+LDFLAGS = -noixemul $(CPU) $(foreach w,$(WRAPS),-Wl,--wrap=$(w))
+LIBS    = -L$(SDLKIT)/lib -L$(DEPS)/lib -lSDL -lpng -lz -lm
+
+BUILD   = build/amigaos
+OBJDIR  = $(BUILD)/obj
+DIST    = dist
+OUT     = $(DIST)/Wizznic
+PROG    = Wizznic
+
+# As Makefile.linux, without the OpenGL scaler (pc.c), the level picture
+# dumper and the DLC client (both PC-only, cut).
+SRC     = $(wildcard src/*.c) src/list/list.c
+AMIGA_C = amiga/amiga_paths.c amiga/amiga_screens.c amiga/stack.c \
+          amiga/png_rgba.c amiga/sdl_image_lite.c amiga/sdl_mixer_lite.c
+OBJS    = $(SRC:%.c=$(OBJDIR)/%.o) $(AMIGA_C:%.c=$(OBJDIR)/%.o)
+
+all: $(BUILD)/$(PROG) package
+
+# The drawer's data: upstream's data/ and the packs DusteD's team made
+# (000_wizznic, 001_wizznic, 099_wizznic-silver). The 2xx packs are
+# Puzznic's levels retyped by others, with no licence of their own: not
+# shipped. Help pictures of other machines are left out. Every .ogg becomes
+# a .wav (effects: PCM; music: IMA ADPCM), and the packs' playlists say so.
+# See AMIGA_PORT.md, "Data and licences".
+PACKS   = 000_wizznic 001_wizznic 099_wizznic-silver
+HELP_OUT = helpgcw0.png helppandora.png helppc-mame.png helppsp.png helpwiz.png
+ICONS   = $(wildcard amiga/icons/*.info)
+OGG2WAV = python3 -I amiga/tools/ogg2wav.py
+
+package: $(BUILD)/$(PROG) $(ICONS) AMIGA_PORT.md amiga/Licences.txt
+	rm -rf $(OUT) $(DIST)/Wizznic.info
+	# the drawers the game makes for itself on its first run, made here so
+	# that they have icons: highscores, levels made in the editor, and dlc
+	# (upstream's bundles; nothing comes into it without a network)
+	mkdir -p $(OUT)/packs $(OUT)/highscores $(OUT)/editorlevels $(OUT)/dlc
+	cp $(BUILD)/$(PROG) $(OUT)/$(PROG)
+	cp -R data $(OUT)/data
+	cd $(OUT)/data/menu && rm -f $(HELP_OUT)
+	rm -f $(OUT)/data/border.png
+	for p in $(PACKS); do cp -R packs/$$p $(OUT)/packs/$$p; done
+	rm -f $(OUT)/packs/099_wizznic-silver/README.txt
+	find $(OUT) -name '*.ogg' | sort | while read f; do \
+	  case "$$f" in */music/*|*/menu-music.ogg) m=adpcm;; *) m=pcm;; esac; \
+	  $(OGG2WAV) $$m "$$f" "$${f%.ogg}.wav" && rm "$$f" || exit 1; done
+	sed -i 's/\.ogg$$/.wav/' $(OUT)/packs/*/info.ini
+	cp AMIGA_PORT.md $(OUT)/ReadMe
+	cp doc/readme.txt $(OUT)/ReadMe-Wizznic
+	cp doc/media-licenses.txt $(OUT)/Media-Licences
+	cp doc/credits.txt $(OUT)/Credits
+	cp amiga/Licences.txt $(OUT)/Licences
+	cp amiga/COPYING $(OUT)/COPYING
+	cp amiga/icons/Wizznic.info $(OUT)/Wizznic.info
+	for f in ReadMe ReadMe-Wizznic Media-Licences Credits Licences COPYING; do \
+	  cp amiga/icons/ReadMe.info $(OUT)/$$f.info; done
+	cd $(OUT) && find . -mindepth 1 -type d | while read d; do cp $(CURDIR)/amiga/icons/Data.info "$$d.info"; done
+	cp amiga/icons/Wizznic-drawer.info $(DIST)/Wizznic.info
+
+$(BUILD)/$(PROG): $(OBJS)
+	$(CC) $(LDFLAGS) -o $@.debug $(OBJS) $(LIBS)
+	$(STRIP) -o $@ $@.debug
+
+$(OBJDIR)/amiga/%.o: amiga/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(AMIGAWARN) -Iamiga -I$(NDK) -c -o $@ $<
+
+$(OBJDIR)/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+objs: $(OBJS)
+
+-include $(OBJS:.o=.d)
+
+clean:
+	rm -rf $(BUILD) $(OUT) $(DIST)/Wizznic.info
+
+.PHONY: all package objs clean

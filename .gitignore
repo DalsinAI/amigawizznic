@@ -11,3 +11,5 @@ wizznic.exe
 Debug/
 bundler/
 dlc/
+build/
+dist/

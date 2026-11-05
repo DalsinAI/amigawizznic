@@ -47,6 +47,10 @@ void initUserPaths()
     }
 
 
+  #elif defined(__amigaos__)
+    //Settings, highscores and editor levels go in the program's drawer.
+    strConfDir = malloc(sizeof(char)*strlen("PROGDIR:")+1);
+    sprintf( strConfDir, "PROGDIR:" );
   #else
     strConfDir = malloc(sizeof(char)*strlen(".")+1);
     sprintf( strConfDir, "." );
