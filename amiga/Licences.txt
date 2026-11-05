@@ -1,0 +1,41 @@
+Wizznic for AmigaOS 3.x: what is whose
+======================================
+
+The game
+--------
+Wizznic! 1.1, (C) 2009-2015 Jimmy Christensen (DusteD),
+https://github.com/DusteDdk/Wizznic. The program is GPL 3 or later
+(COPYING).
+
+The data in this drawer
+-----------------------
+Upstream's doc/media-licenses.txt (here: Media-Licences) says: all media
+are licensed under GPLv3. It names the stock material the pictures and
+sounds were made from (DeviantArt textures and brushes, the "Latin Runes"
+font from FontStruct, sounds by Bart Kelsey, Michel Baradari and others)
+and the music, by Sean Hawk (seanhawk.dk), a friend of the author's.
+All of it comes with the game, from its author, under GPL 3.
+
+- data/: menus, fonts, pictures, sounds and the menu music: GPL 3.
+- packs/000_wizznic, 001_wizznic ("Wizznic! 1" and "2", by DST/VMD, the
+  author's team) and 099_wizznic-silver (by DusteD): levels, themes,
+  sounds and Sean Hawk's music: GPL 3.
+- The sounds and music are upstream's Ogg Vorbis files converted to WAV
+  for this drawer (16-bit PCM effects, IMA ADPCM music, 22050 Hz mono):
+  the same works, still GPL 3.
+- The icons are drawn from the game's own data/wmicon.png (GPL 3).
+
+Not in this drawer: packs 200 to 208 ("Nes levels" by bMan, "Puzznic! S.4"
+to "S.14" by KML). They are the levels of Taito's Puzznic typed in by
+fans, with no licence of their own, so they are not shipped.
+
+The Amiga port
+--------------
+amiga/ in the source (the SDL_image and SDL_mixer shims, the path
+wrapper, the screens fix, the stack, the build and the sound converter):
+the AmiCradle Team, GPL 3 or later, like Wizznic. Parts come from the
+Team's OpenLieroX, Commander Genius and Seven Kingdoms ports.
+
+Linked in: SDL 1.2 as sdl12-compat (zlib licence) with SDL 2's program
+half (zlib licence), from the OpenGPU developer kit; libpng (the libpng
+licence) and zlib (zlib licence); libnix from GFOpenAmigaGCC.
