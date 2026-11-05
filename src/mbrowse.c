@@ -160,8 +160,13 @@ void fileListMake(const char* path)
           } else {
             //Only add ogg or mp3's
             fi->dir=-1;
+#if defined(__amigaos__)
+            //The Amiga mixer plays WAV (PCM or IMA ADPCM) only.
+            if( strlen(pent->d_name) > 4 && strcasecmp( ".wav", pent->d_name+(strlen(pent->d_name)-4))==0 )
+#else
             if( strcmp( ".mp3", pent->d_name+(strlen(pent->d_name)-4))==0 ||
                 strcmp( ".ogg", pent->d_name+(strlen(pent->d_name)-4))==0)
+#endif
                 {
                   fi->dir=0;
                 }

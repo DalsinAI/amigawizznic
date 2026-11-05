@@ -111,7 +111,13 @@ void loadSettings()
   settings.playerName = malloc(sizeof(char)*11 );
   strcpy(settings.playerName, "player");
 
+#if defined(__amigaos__)
+  settings.musicDir = malloc( sizeof(char)*(strlen("PROGDIR:")+1) );
+  if( settings.musicDir )
+    strcpy( settings.musicDir, "PROGDIR:" );
+#else
   settings.musicDir = cwd( NULL, 0 );
+#endif
   if( !settings.musicDir )
     printf("Out of memory, will crash soon.\n");
 

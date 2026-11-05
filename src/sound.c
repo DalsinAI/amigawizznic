@@ -30,6 +30,10 @@
 
 #define MUSIC_FADETIME 500
 
+#ifndef SOUND_EXT
+  #define SOUND_EXT ".ogg"
+#endif
+
 
 static Mix_Music* mus[2] = {0,0};
 static double mPos[2] = { 0,0 }; //For keeping track of track positions since SDL_Mixer cant.
@@ -105,26 +109,26 @@ int loadSample(const char* fileName, int index)
 
 void loadSamples(const char* sndDir, const char* musicFile)
 {
-  loadSample( packGetFile(sndDir,"click.ogg"), SND_CLICK );
-  loadSample( packGetFile(sndDir,"brickmove.ogg"), SND_BRICKMOVE );
-  loadSample( packGetFile(sndDir,"brickgrab.ogg"), SND_BRICKGRAB );
-  loadSample( packGetFile(sndDir,"brickbreak.ogg"), SND_BRICKBREAK );
-  loadSample( packGetFile(sndDir,"scoretick.ogg"), SND_SCORECOUNT );
-  loadSample( packGetFile(sndDir,"countdown.ogg"), SND_COUNTDOWNTOSTART );
-  loadSample( packGetFile(sndDir,"start.ogg"), SND_START );
-  loadSample( packGetFile(sndDir,"timeout.ogg"), SND_TIMEOUT );
-  loadSample( packGetFile(sndDir,"victory.ogg"), SND_VICTORY );
-  loadSample( packGetFile(sndDir,"timeout.ogg"), SND_TIMEOUT );
-  loadSample( packGetFile(sndDir,"onewaymove.ogg"), SND_ONEWAY_MOVE );
-  loadSample( packGetFile(sndDir,"teleported.ogg"), SND_TELEPORTED );
-  loadSample( packGetFile(sndDir,"switchactivate.ogg"), SND_SWITCH_ACTIVATED );
-  loadSample( packGetFile(sndDir,"switchinactive.ogg"), SND_SWITCH_DEACTIVATED );
-  loadSample( packGetFile(sndDir,"brickswap.ogg"), SND_BRICKSWAP );
-  loadSample( packGetFile(sndDir,"brickcopy.ogg"), SND_BRICKCOPY );
-  loadSample( packGetFile(sndDir,"brickswapdenied.ogg"), SND_BRICKSWAP );
-  loadSample( packGetFile(sndDir,"brickcopydenied.ogg"), SND_BRICKCOPY );
-  loadSample( packGetFile(sndDir, "winner.ogg"), SND_WINNER);
-  loadSample( packGetFile(sndDir, "loser.ogg"), SND_LOSER);
+  loadSample( packGetFile(sndDir,"click"SOUND_EXT), SND_CLICK );
+  loadSample( packGetFile(sndDir,"brickmove"SOUND_EXT), SND_BRICKMOVE );
+  loadSample( packGetFile(sndDir,"brickgrab"SOUND_EXT), SND_BRICKGRAB );
+  loadSample( packGetFile(sndDir,"brickbreak"SOUND_EXT), SND_BRICKBREAK );
+  loadSample( packGetFile(sndDir,"scoretick"SOUND_EXT), SND_SCORECOUNT );
+  loadSample( packGetFile(sndDir,"countdown"SOUND_EXT), SND_COUNTDOWNTOSTART );
+  loadSample( packGetFile(sndDir,"start"SOUND_EXT), SND_START );
+  loadSample( packGetFile(sndDir,"timeout"SOUND_EXT), SND_TIMEOUT );
+  loadSample( packGetFile(sndDir,"victory"SOUND_EXT), SND_VICTORY );
+  loadSample( packGetFile(sndDir,"timeout"SOUND_EXT), SND_TIMEOUT );
+  loadSample( packGetFile(sndDir,"onewaymove"SOUND_EXT), SND_ONEWAY_MOVE );
+  loadSample( packGetFile(sndDir,"teleported"SOUND_EXT), SND_TELEPORTED );
+  loadSample( packGetFile(sndDir,"switchactivate"SOUND_EXT), SND_SWITCH_ACTIVATED );
+  loadSample( packGetFile(sndDir,"switchinactive"SOUND_EXT), SND_SWITCH_DEACTIVATED );
+  loadSample( packGetFile(sndDir,"brickswap"SOUND_EXT), SND_BRICKSWAP );
+  loadSample( packGetFile(sndDir,"brickcopy"SOUND_EXT), SND_BRICKCOPY );
+  loadSample( packGetFile(sndDir,"brickswapdenied"SOUND_EXT), SND_BRICKSWAP );
+  loadSample( packGetFile(sndDir,"brickcopydenied"SOUND_EXT), SND_BRICKCOPY );
+  loadSample( packGetFile(sndDir, "winner"SOUND_EXT), SND_WINNER);
+  loadSample( packGetFile(sndDir, "loser"SOUND_EXT), SND_LOSER);
 
   //Music load code
   if(setting()->disableMusic) return;
@@ -155,12 +159,12 @@ void loadSamples(const char* sndDir, const char* musicFile)
 
 void loadMenuSamples()
 {
-  loadSample( DATADIR"data/snd/menumove.ogg", SND_MENUMOVE );
-  loadSample( DATADIR"data/snd/menuclick.ogg", SND_MENUCLICK );
-  loadSample( DATADIR"data/snd/rocketboom.ogg", SND_ROCKETBOOM );
-  loadSample( DATADIR"data/snd/rocketlaunch.ogg", SND_ROCKETLAUNCH );
-  loadSample( packGetFile("themes/oldskool/snd", "winner.ogg"), SND_WINNER);
-  loadSample( packGetFile("themes/oldskool/snd", "loser.ogg"), SND_LOSER);
+  loadSample( DATADIR"data/snd/menumove"SOUND_EXT, SND_MENUMOVE );
+  loadSample( DATADIR"data/snd/menuclick"SOUND_EXT, SND_MENUCLICK );
+  loadSample( DATADIR"data/snd/rocketboom"SOUND_EXT, SND_ROCKETBOOM );
+  loadSample( DATADIR"data/snd/rocketlaunch"SOUND_EXT, SND_ROCKETLAUNCH );
+  loadSample( packGetFile("themes/oldskool/snd", "winner"SOUND_EXT), SND_WINNER);
+  loadSample( packGetFile("themes/oldskool/snd", "loser"SOUND_EXT), SND_LOSER);
 }
 
 void sndPlay(int sample, int posX)
@@ -395,7 +399,7 @@ void soundSetMusic()
     soundPlayUserSongNum(0,0); //Sets number of tracks too.
   } else {//Or load in-game music
     //Load the menu-song
-    mus[0] = Mix_LoadMUS( DATADIR"data/menu-music.ogg" );
+    mus[0] = Mix_LoadMUS( DATADIR"data/menu-music"SOUND_EXT );
 
     if(!mus[0])
     {

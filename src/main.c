@@ -46,6 +46,12 @@
 #include "transition.h"
 #include "platform/libDLC.h"
 
+#if defined(__amigaos__)
+//amiga/amiga_screens.c: closes the empty screens SDL2.module 0.6 leaves after a full-screen quit.
+void amiga_screens_snapshot(void);
+void amiga_screens_close_leftovers(void);
+#endif
+
 #if defined(PC)
 #include <sys/stat.h>
 #include <unistd.h>
@@ -144,6 +150,11 @@ int main(int argc, char *argv[])
 
   //Set scaling
   setting()->scaleFactor=1.0;
+
+  #if defined(__amigaos__)
+  amiga_screens_snapshot();
+  atexit(amiga_screens_close_leftovers); //Runs after SDL_Quit (registered later).
+  #endif
 
   atexit(SDL_Quit);
 
@@ -353,6 +364,16 @@ int main(int argc, char *argv[])
 
   //Load fonts
   txtInit();
+
+  #if defined(__amigaos__)
+  //Loading the packs, sounds and music takes a while on a 68k: say so.
+  SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0,0,0));
+  txtWriteCenter(screen, FONTSMALL, "Loading...", HSCREENW, HSCREENH);
+  if( doScale > 1 )
+    swScale(screen,doScale);
+  else
+    SDL_Flip(screen);
+  #endif
 
   //Menu Graphics
   if(!initMenu(screen))
