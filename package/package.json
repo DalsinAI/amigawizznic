@@ -1,0 +1,57 @@
+{
+  "drawer": "Wizznic",
+  "drawer_icon": "amiga/icons/Wizznic-drawer.info",
+  "archive": "wizznic-{version}-68040",
+  "members": [
+    {
+      "name": "Wizznic",
+      "build": "Wizznic",
+      "check": "executable_sha256"
+    },
+    {
+      "name": "",
+      "tar": "drawer.tar"
+    }
+  ],
+  "aminet": [
+    [
+      "Short",
+      "Wizznic, a Puzznic-like block puzzle, 68040+FPU"
+    ],
+    [
+      "Author",
+      "Jimmy Christensen and others (Wizznic); Amiga port: AmiCradle Team"
+    ],
+    [
+      "Uploader",
+      "AmiCradle Team"
+    ],
+    [
+      "Type",
+      "game/think"
+    ],
+    [
+      "Version",
+      "{version}"
+    ],
+    [
+      "Requires",
+      "AmigaOS 3.2, 68040/68060 with FPU, RTG, GFOpenGPU (SDL2.module)"
+    ],
+    [
+      "Architecture",
+      "m68k-amigaos >= 3.0"
+    ]
+  ],
+  "root": [
+    {
+      "name": "Install-Wizznic",
+      "repo": "package/installer/Install-Wizznic",
+      "installer": true
+    },
+    {
+      "name": "Install-Wizznic.info",
+      "repo": "package/installer/Install-Wizznic.info"
+    }
+  ]
+}

@@ -25,6 +25,17 @@ What you need
   level's track are kept in memory, about 1.2 and up to 2.8 MB).
 
 
+Installing
+----------
+
+Unpack the archive anywhere (on AmiCradle: SYS:Utilities/OpenCompress x
+wizznic-...lha RAM:), then double-click Install-Wizznic beside the Wizznic
+drawer: it checks for a 68040 with FPU and for SDL2.module (in
+LIBS:GFOpenGPU/, or copied there from LIBS:OpenGPU/), asks where to put the
+game (Work:Games by default) and updates an earlier install in place,
+keeping its settings.ini, highscores and editorlevels.
+
+
 How to play
 -----------
 
