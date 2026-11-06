@@ -1,0 +1,13 @@
+{
+  "name": "Wizznic",
+  "version": "1.1-amiga1",
+  "drawer": "Wizznic",
+  "program": "Wizznic",
+  "cpu": "68040",
+  "fpu": true,
+  "space": 32000000,
+  "modules": ["SDL2.module"],
+  "keep": ["settings.ini", "highscores", "editorlevels"],
+  "parent": "Work:Games",
+  "badge": "../amiga/icons/art/wizznic.png"
+}
