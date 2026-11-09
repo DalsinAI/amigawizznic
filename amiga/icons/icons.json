@@ -9,7 +9,10 @@
     {
       "file": "Wizznic.info",
       "kind": "tool",
-      "stack": 262144
+      "stack": 262144,
+      "toolTypes": [
+        "(FULLSCREEN)"
+      ]
     },
     {
       "file": "ReadMe.info",

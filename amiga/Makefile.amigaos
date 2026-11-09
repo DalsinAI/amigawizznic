@@ -83,6 +83,7 @@ package: $(BUILD)/$(PROG) $(ICONS) AMIGA_PORT.md amiga/Licences.txt
 	  $(OGG2WAV) $$m "$$f" "$${f%.ogg}.wav" && rm "$$f" || exit 1; done
 	sed -i 's/\.ogg$$/.wav/' $(OUT)/packs/*/info.ini
 	cp AMIGA_PORT.md $(OUT)/ReadMe
+	cp amiga/Controls $(OUT)/Controls
 	cp doc/readme.txt $(OUT)/ReadMe-Wizznic
 	cp doc/media-licenses.txt $(OUT)/Media-Licences
 	cp doc/credits.txt $(OUT)/Credits
