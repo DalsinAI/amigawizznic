@@ -91,7 +91,6 @@ package: $(BUILD)/$(PROG) $(ICONS) AMIGA_PORT.md amiga/Licences.txt
 	cp amiga/icons/Wizznic.info $(OUT)/Wizznic.info
 	for f in ReadMe ReadMe-Wizznic Media-Licences Credits Licences COPYING; do \
 	  cp amiga/icons/ReadMe.info $(OUT)/$$f.info; done
-	cd $(OUT) && find . -mindepth 1 -type d | while read d; do cp $(CURDIR)/amiga/icons/Data.info "$$d.info"; done
 	cp amiga/icons/Wizznic-drawer.info $(DIST)/Wizznic.info
 
 $(BUILD)/$(PROG): $(OBJS)
